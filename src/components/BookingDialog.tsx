@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -33,10 +33,18 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
 
     setLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("You must be logged in to make a booking");
+      }
+
       const { error } = await supabase.from("bookings").insert({
         service_id: service.id,
+        user_id: user.id,
         scheduled_time: format(date, "yyyy-MM-dd'T'HH:mm:ss"),
         special_requests: specialRequests,
+        status: 'pending'
       });
 
       if (error) throw error;
