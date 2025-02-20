@@ -1,5 +1,5 @@
 
-import { Car, Car as CarIcon, UserCircle2, Taxi } from "lucide-react";
+import { Car, Car as CarIcon, UserCircle2 } from "lucide-react";
 import { ServiceCard } from "./ServiceCard";
 
 export function Services() {
@@ -19,7 +19,7 @@ export function Services() {
     {
       title: "Rent a Vehicle",
       description: "Wide range of vehicles available for your travel needs.",
-      icon: <Taxi className="h-6 w-6" />,
+      icon: <Car className="h-6 w-6" />,
       onClick: () => console.log("Rental clicked"),
     },
   ];
