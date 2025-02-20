@@ -1,8 +1,8 @@
 
 import { Button } from "@/components/ui/button";
-import { Car } from "lucide-react";
+import { Car, User, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
 
 export function Navbar() {
@@ -28,10 +28,24 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Car className="h-8 w-8 text-primary" />
-            <span className="ml-2 text-xl font-bold">Caravaro</span>
+            <Link to="/" className="flex items-center">
+              <Car className="h-8 w-8 text-primary" />
+              <span className="ml-2 text-xl font-bold">Caravaro</span>
+            </Link>
           </div>
           <div className="flex items-center gap-4">
+            <Link to="/bookings">
+              <Button variant="ghost" className="gap-2">
+                <Calendar className="h-4 w-4" />
+                My Bookings
+              </Button>
+            </Link>
+            <Link to="/profile">
+              <Button variant="ghost" className="gap-2">
+                <User className="h-4 w-4" />
+                Profile
+              </Button>
+            </Link>
             <Button onClick={handleSignOut} variant="ghost">
               Sign Out
             </Button>

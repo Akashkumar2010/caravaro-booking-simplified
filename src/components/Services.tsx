@@ -4,8 +4,13 @@ import { ServiceCard } from "./ServiceCard";
 import { supabase } from "@/lib/supabase";
 import type { Service } from "@/types/database";
 import { Car, UserCircle2 } from "lucide-react";
+import { useState } from "react";
+import { BookingDialog } from "./BookingDialog";
 
 export function Services() {
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
   const { data: services, isLoading } = useQuery({
     queryKey: ["services"],
     queryFn: async () => {
@@ -25,6 +30,11 @@ export function Services() {
       default:
         return <Car className="h-6 w-6" />;
     }
+  };
+
+  const handleBookService = (service: Service) => {
+    setSelectedService(service);
+    setIsBookingOpen(true);
   };
 
   if (isLoading) {
@@ -49,13 +59,21 @@ export function Services() {
               title={service.name}
               description={service.description || ""}
               icon={getIcon(service.type)}
-              onClick={() => console.log("Service clicked:", service.id)}
+              onClick={() => handleBookService(service)}
               price={service.price}
               imageUrl={service.image_url || ""}
             />
           ))}
         </div>
       </div>
+      <BookingDialog
+        service={selectedService}
+        isOpen={isBookingOpen}
+        onClose={() => {
+          setIsBookingOpen(false);
+          setSelectedService(null);
+        }}
+      />
     </section>
   );
 }
