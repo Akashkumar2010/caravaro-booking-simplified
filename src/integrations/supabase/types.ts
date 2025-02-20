@@ -11,34 +11,52 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          coupon_code: string | null
           created_at: string
+          destination: string | null
           id: string
+          pickup_location: string | null
+          rental_duration: number | null
           scheduled_time: string
+          seating_capacity: string | null
           service_id: string
           special_requests: string | null
           status: Database["public"]["Enums"]["service_status"]
           updated_at: string
           user_id: string
+          vehicle_id: string | null
         }
         Insert: {
+          coupon_code?: string | null
           created_at?: string
+          destination?: string | null
           id?: string
+          pickup_location?: string | null
+          rental_duration?: number | null
           scheduled_time: string
+          seating_capacity?: string | null
           service_id: string
           special_requests?: string | null
           status?: Database["public"]["Enums"]["service_status"]
           updated_at?: string
           user_id: string
+          vehicle_id?: string | null
         }
         Update: {
+          coupon_code?: string | null
           created_at?: string
+          destination?: string | null
           id?: string
+          pickup_location?: string | null
+          rental_duration?: number | null
           scheduled_time?: string
+          seating_capacity?: string | null
           service_id?: string
           special_requests?: string | null
           status?: Database["public"]["Enums"]["service_status"]
           updated_at?: string
           user_id?: string
+          vehicle_id?: string | null
         }
         Relationships: [
           {
@@ -55,7 +73,44 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookings_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_percentage: number
+          id: string
+          service_type: Database["public"]["Enums"]["service_type"] | null
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_percentage: number
+          id?: string
+          service_type?: Database["public"]["Enums"]["service_type"] | null
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_percentage?: number
+          id?: string
+          service_type?: Database["public"]["Enums"]["service_type"] | null
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -80,6 +135,42 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rental_vehicles: {
+        Row: {
+          availability_status: string
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string
+          price_per_day: number
+          seating_capacity: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          availability_status?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          price_per_day: number
+          seating_capacity: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          availability_status?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          price_per_day?: number
+          seating_capacity?: number
+          type?: string
           updated_at?: string
         }
         Relationships: []

@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Bookings from "./pages/Bookings";
+import AdminDashboard from "./pages/admin/Dashboard";
 import { supabase } from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
 
@@ -18,10 +19,12 @@ const queryClient = new QueryClient();
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      checkIfAdmin(session);
       setLoading(false);
     });
 
@@ -29,10 +32,17 @@ const App: React.FC = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      checkIfAdmin(session);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const checkIfAdmin = async (session: Session | null) => {
+    if (!session) return;
+    const { data: { role } } = await supabase.auth.getUser();
+    setIsAdmin(role === 'admin');
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -56,6 +66,16 @@ const App: React.FC = () => {
             <Route
               path="/bookings"
               element={session ? <Bookings /> : <Navigate to="/auth" replace />}
+            />
+            <Route
+              path="/admin/*"
+              element={
+                session && isAdmin ? (
+                  <AdminDashboard />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
             />
             <Route
               path="/auth"
