@@ -8,8 +8,6 @@ import { format } from "date-fns";
 import type { Booking, Service } from "@/types/database";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type BookingStatus = "pending" | "confirmed" | "in_progress" | "completed" | "cancelled";
-
 export function BookingManagement() {
   const { toast } = useToast();
 
@@ -27,7 +25,7 @@ export function BookingManagement() {
     },
   });
 
-  const updateBookingStatus = async (bookingId: string, status: BookingStatus) => {
+  const updateBookingStatus = async (bookingId: string, status: string) => {
     try {
       const { error } = await supabase
         .from("bookings")
@@ -70,7 +68,7 @@ export function BookingManagement() {
               <TableCell>
                 <Select
                   value={booking.status}
-                  onValueChange={(value: BookingStatus) => updateBookingStatus(booking.id, value)}
+                  onValueChange={(value) => updateBookingStatus(booking.id, value)}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select status" />
