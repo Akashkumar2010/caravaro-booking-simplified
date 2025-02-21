@@ -5,34 +5,27 @@ import { ArrowRight } from "lucide-react";
 export function Hero() {
   return (
     <div className="relative overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d"
-          alt="Luxury Car"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/60" />
-      </div>
-
-      <div className="relative z-10 section-padding">
+      <div className="section-padding">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h1 className="animate-fade-in text-4xl font-bold tracking-tight sm:text-6xl text-white">
-              Premium Car Services at Your Fingertips
+            <h1 className="animate-fade-in text-4xl font-bold tracking-tight sm:text-6xl heading-gradient">
+              Your Premium Car Services Platform
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-200 animate-fade-in max-w-3xl mx-auto">
-              From luxurious car rentals to professional car wash services and experienced drivers.
-              Experience convenience and quality, all in one platform.
+            <p className="mt-6 text-lg leading-8 text-gray-600 animate-fade-in">
+              From professional car wash services to experienced drivers and luxury vehicle rentals.
+              Experience convenience and quality, all in one place.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6 animate-slide-up">
               <Button size="lg" className="group">
-                Book Now
+                Explore Services
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
           </div>
         </div>
+      </div>
+      <div className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
+        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-10 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
       </div>
     </div>
   );
