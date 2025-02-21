@@ -40,7 +40,7 @@ const App: React.FC = () => {
 
   const checkIfAdmin = async (session: Session | null) => {
     if (!session) return;
-    const { data, error } = await supabase.rpc('get_user_role');
+    const { data, error } = await supabase.rpc('get_user_role') as { data: string | null, error: Error | null };
     if (!error && data) {
       setIsAdmin(data === 'admin');
     }
