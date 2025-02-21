@@ -11,6 +11,9 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Bookings from "./pages/Bookings";
 import AdminDashboard from "./pages/admin/Dashboard";
+import CarWash from "./pages/services/CarWash";
+import DriverHire from "./pages/services/DriverHire";
+import CarRental from "./pages/services/CarRental";
 import { supabase } from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
 
@@ -74,6 +77,18 @@ const App: React.FC = () => {
             <Route
               path="/bookings"
               element={session ? <Bookings /> : <Navigate to="/auth" replace />}
+            />
+            <Route
+              path="/services/car-wash"
+              element={session ? <CarWash /> : <Navigate to="/auth" replace />}
+            />
+            <Route
+              path="/services/driver-hire"
+              element={session ? <DriverHire /> : <Navigate to="/auth" replace />}
+            />
+            <Route
+              path="/services/car-rental"
+              element={session ? <CarRental /> : <Navigate to="/auth" replace />}
             />
             <Route
               path="/admin/*"
