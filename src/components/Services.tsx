@@ -4,12 +4,13 @@ import { ServiceCard } from "./ServiceCard";
 import { supabase } from "@/lib/supabase";
 import type { Service } from "@/types/database";
 import { Car, UserCircle2, Bus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookingDialog } from "./BookingDialog";
 
 export function Services() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const { data: services, isLoading } = useQuery({
     queryKey: ["services"],
@@ -19,6 +20,34 @@ export function Services() {
       return data as Service[];
     },
   });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (services && services.length > 0) {
+        setScrollPosition((prev) => {
+          const container = document.querySelector('.services-container');
+          if (!container) return prev;
+          
+          const maxScroll = container.scrollWidth - container.clientWidth;
+          const newPosition = prev + 1;
+          
+          if (newPosition >= maxScroll) {
+            return 0;
+          }
+          return newPosition;
+        });
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [services]);
+
+  useEffect(() => {
+    const container = document.querySelector('.services-container');
+    if (container) {
+      container.scrollLeft = scrollPosition;
+    }
+  }, [scrollPosition]);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -54,9 +83,10 @@ export function Services() {
             Choose from our range of premium car services
           </p>
         </div>
-        <div className="relative">
-          <div className="overflow-x-auto pb-8">
-            <div className="flex gap-8 min-w-full">
+        <div className="relative overflow-hidden">
+          <div className="services-container overflow-hidden">
+            <div className="flex gap-8 transition-all duration-300" 
+                 style={{ transform: `translateX(-${scrollPosition}px)` }}>
               {services?.map((service) => (
                 <div key={service.id} className="w-[350px] flex-shrink-0">
                   <ServiceCard
