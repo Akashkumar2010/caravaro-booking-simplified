@@ -54,18 +54,23 @@ export function Services() {
             Choose from our range of premium car services
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {services?.map((service) => (
-            <ServiceCard
-              key={service.id}
-              title={service.name}
-              description={service.description || ""}
-              icon={getIcon(service.type)}
-              onClick={() => handleBookService(service)}
-              price={service.price}
-              imageUrl={service.image_url || ""}
-            />
-          ))}
+        <div className="relative">
+          <div className="overflow-x-auto pb-8">
+            <div className="flex gap-8 min-w-full">
+              {services?.map((service) => (
+                <div key={service.id} className="w-[350px] flex-shrink-0">
+                  <ServiceCard
+                    title={service.name}
+                    description={service.description || ""}
+                    icon={getIcon(service.type)}
+                    onClick={() => handleBookService(service)}
+                    price={service.price}
+                    imageUrl={service.image_url || ""}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       <BookingDialog
