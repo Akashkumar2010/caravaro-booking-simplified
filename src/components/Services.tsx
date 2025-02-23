@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ServiceCard } from "./ServiceCard";
 import { supabase } from "@/lib/supabase";
 import type { Service } from "@/types/database";
-import { Car, UserCircle2 } from "lucide-react";
+import { Car, UserCircle2, Bus } from "lucide-react";
 import { useState } from "react";
 import { BookingDialog } from "./BookingDialog";
 
@@ -23,10 +23,12 @@ export function Services() {
   const getIcon = (type: string) => {
     switch (type) {
       case "car_wash":
-      case "car_rental":
         return <Car className="h-6 w-6" />;
       case "driver_hire":
         return <UserCircle2 className="h-6 w-6" />;
+      case "car_rental":
+      case "bus_service":
+        return <Bus className="h-6 w-6" />;
       default:
         return <Car className="h-6 w-6" />;
     }

@@ -32,6 +32,11 @@ export interface Booking {
   special_requests: string | null;
   created_at: string;
   updated_at: string;
+  vehicle_id?: string | null;
+  pickup_location?: string | null;
+  destination?: string | null;
+  rental_duration?: number | null;
+  seating_capacity?: string | null;
 }
 
 export interface Vehicle {
@@ -41,6 +46,18 @@ export interface Vehicle {
   model: string;
   year: number;
   license_plate: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RentalVehicle {
+  id: string;
+  name: string;
+  type: string;
+  seating_capacity: number;
+  price_per_day: number;
+  availability_status: string;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
 }
