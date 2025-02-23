@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Bookings from "./pages/Bookings";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
@@ -56,6 +57,10 @@ const App = () => {
             <Route
               path="/bookings"
               element={session ? <Bookings /> : <Navigate to="/auth" replace />}
+            />
+            <Route
+              path="/admin/*"
+              element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />}
             />
             <Route
               path="/auth"
