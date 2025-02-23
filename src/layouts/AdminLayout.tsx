@@ -5,6 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
+interface UserRole {
+  id: string;
+  user_id: string;
+  role: 'admin' | 'user';
+  created_at: string;
+  updated_at: string;
+}
+
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
@@ -15,14 +23,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
       
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
+      const { data } = await supabase
+        .from('user_roles')
+        .select('*')
+        .eq('user_id', user.id)
         .single();
         
-      if (error || !data) return false;
-      return data.role === "admin";
+      return data?.role === 'admin';
     },
   });
 
