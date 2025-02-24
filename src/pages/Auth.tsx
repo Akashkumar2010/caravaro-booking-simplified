@@ -57,12 +57,6 @@ export default function Auth() {
     }
   };
 
-  // Quick login for admin (demo purposes)
-  const handleQuickAdminLogin = async () => {
-    setEmail("admin@example.com");
-    setPassword("admin123");
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
       {/* Background gradients */}
@@ -152,14 +146,6 @@ export default function Auth() {
                 onClick={() => setIsSignUp(!isSignUp)}
               >
                 {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full text-sm"
-                onClick={handleQuickAdminLogin}
-              >
-                Demo Admin Login
               </Button>
             </CardFooter>
           </form>
