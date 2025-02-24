@@ -14,7 +14,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -46,26 +53,11 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route
-              path="/"
-              element={session ? <Index /> : <Navigate to="/auth" replace />}
-            />
-            <Route
-              path="/profile"
-              element={session ? <Profile /> : <Navigate to="/auth" replace />}
-            />
-            <Route
-              path="/bookings"
-              element={session ? <Bookings /> : <Navigate to="/auth" replace />}
-            />
-            <Route
-              path="/admin/*"
-              element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />}
-            />
-            <Route
-              path="/auth"
-              element={!session ? <Auth /> : <Navigate to="/" replace />}
-            />
+            <Route path="/" element={session ? <Index /> : <Navigate to="/auth" replace />} />
+            <Route path="/profile" element={session ? <Profile /> : <Navigate to="/auth" replace />} />
+            <Route path="/bookings" element={session ? <Bookings /> : <Navigate to="/auth" replace />} />
+            <Route path="/admin/*" element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />} />
+            <Route path="/auth" element={!session ? <Auth /> : <Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
