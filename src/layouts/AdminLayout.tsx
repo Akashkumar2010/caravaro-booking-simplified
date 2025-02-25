@@ -1,6 +1,6 @@
 
 import { Navbar } from "@/components/Navbar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -16,12 +16,19 @@ interface UserRole {
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Check if user is admin
   const { data: isAdmin, isLoading } = useQuery({
     queryKey: ["isAdmin"],
     queryFn: async () => {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          console.log('No session found');
+          return false;
+        }
+
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           console.log('No user found');
@@ -32,7 +39,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         
         const { data, error } = await supabase
           .from('user_roles')
-          .select('*')
+          .select('role')
           .eq('user_id', user.id)
           .eq('role', 'admin')
           .maybeSingle();
@@ -50,29 +57,37 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       }
     },
     retry: 1,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    staleTime: 30000, // Cache the result for 30 seconds
   });
 
   useEffect(() => {
-    const checkSession = async () => {
+    const initializeAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      
       if (!session) {
+        console.log('No session found, redirecting to auth');
         navigate('/auth');
         return;
       }
 
-      if (!isLoading && !isAdmin) {
-        toast.error("Access Denied", {
-          description: "You don't have permission to access the admin panel."
-        });
-        navigate("/");
+      if (!isLoading) {
+        if (!isAdmin) {
+          console.log('User is not admin, redirecting to home');
+          toast.error("Access Denied", {
+            description: "You don't have permission to access the admin panel."
+          });
+          navigate("/");
+        }
+        setIsInitialized(true);
       }
     };
 
-    checkSession();
+    initializeAuth();
   }, [isAdmin, isLoading, navigate]);
 
-  if (isLoading) {
+  // Show loading state
+  if (isLoading || !isInitialized) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -80,6 +95,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // Don't render anything if not admin
   if (!isAdmin) {
     return null;
   }
