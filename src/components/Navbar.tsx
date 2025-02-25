@@ -3,23 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Car, User, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { useToast } from "./ui/use-toast";
 
 export function Navbar() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Sign out error:', error);
-        throw error;
-      }
-      console.log('Successfully signed out');
+      if (error) throw error;
       navigate("/auth");
     } catch (error: any) {
-      console.error('Error in handleSignOut:', error);
-      toast.error("Error signing out", {
+      toast({
+        variant: "destructive",
+        title: "Error signing out",
         description: error.message,
       });
     }
