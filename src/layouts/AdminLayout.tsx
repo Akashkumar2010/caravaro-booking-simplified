@@ -28,6 +28,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           return false;
         }
         
+        console.log('Checking admin status for user:', user.email);
+        
         const { data, error } = await supabase
           .from('user_roles')
           .select('*')
@@ -40,22 +42,34 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           return false;
         }
 
+        console.log('Admin check result:', data);
         return !!data;
       } catch (error) {
         console.error('Error in isAdmin query:', error);
         return false;
       }
     },
-    retry: false
+    retry: 1,
+    refetchOnWindowFocus: false
   });
 
   useEffect(() => {
-    if (!isLoading && !isAdmin) {
-      toast.error("Access Denied", {
-        description: "You don't have permission to access the admin panel."
-      });
-      navigate("/");
-    }
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+
+      if (!isLoading && !isAdmin) {
+        toast.error("Access Denied", {
+          description: "You don't have permission to access the admin panel."
+        });
+        navigate("/");
+      }
+    };
+
+    checkSession();
   }, [isAdmin, isLoading, navigate]);
 
   if (isLoading) {
