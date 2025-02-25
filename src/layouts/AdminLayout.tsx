@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 interface UserRole {
   id: string;
@@ -30,8 +30,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         
         const { data, error } = await supabase
           .from('user_roles')
-          .select('role')
+          .select('*')
           .eq('user_id', user.id)
+          .eq('role', 'admin')
           .maybeSingle();
 
         if (error) {
@@ -39,29 +40,30 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           return false;
         }
 
-        console.log('User role data:', data);
-        return data?.role === 'admin';
+        return !!data;
       } catch (error) {
         console.error('Error in isAdmin query:', error);
         return false;
       }
     },
-    retry: 1,
+    retry: false
   });
 
   useEffect(() => {
     if (!isLoading && !isAdmin) {
-      toast({
-        variant: "destructive",
-        title: "Access Denied",
-        description: "You don't have permission to access the admin panel.",
+      toast.error("Access Denied", {
+        description: "You don't have permission to access the admin panel."
       });
       navigate("/");
     }
   }, [isAdmin, isLoading, navigate]);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (!isAdmin) {
