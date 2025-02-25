@@ -59,7 +59,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
-      {/* Background gradients */}
+      {/* Animated background gradients */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-tr from-rose-100 to-teal-100 opacity-30" />
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-blue-100 to-purple-100 opacity-30 blur-3xl animate-pulse" />
@@ -69,14 +69,14 @@ export default function Auth() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            Welcome Back
+            Welcome to Caravaro
           </h1>
           <p className="mt-2 text-gray-600">
             {isSignUp ? "Create your account" : "Sign in to your account"}
           </p>
         </div>
 
-        <Card className="backdrop-blur-lg bg-white/80 shadow-xl">
+        <Card className="backdrop-blur-lg bg-white/80 shadow-xl border-0">
           <CardHeader>
             <CardTitle>{isSignUp ? "Create an account" : "Sign in"}</CardTitle>
             <CardDescription>
@@ -136,7 +136,7 @@ export default function Auth() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full bg-gradient-to-r from-gray-900 to-gray-600 hover:from-gray-800 hover:to-gray-500" disabled={loading}>
                 {loading ? "Loading..." : isSignUp ? "Sign up" : "Sign in"}
               </Button>
               <Button
