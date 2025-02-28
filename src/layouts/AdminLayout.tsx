@@ -15,12 +15,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     queryKey: ["isAdmin"],
     queryFn: async () => {
       try {
+        // Get current session
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           console.log('No session found, not an admin');
           return false;
         }
 
+        // Get current user
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           console.log('No user found, not an admin');
@@ -29,6 +31,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         
         console.log('Checking admin status for user:', user.email);
         
+        // Check if the user has the admin role
         const { data, error } = await supabase
           .from('user_roles')
           .select('*')
@@ -65,7 +68,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         }
 
         if (!isLoading) {
-          if (!isAdmin) {
+          if (isAdmin === false) {
             console.log('User is not admin, redirecting to home');
             toast.error("Access Denied", {
               description: "You don't have permission to access the admin panel."
