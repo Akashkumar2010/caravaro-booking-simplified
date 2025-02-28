@@ -10,8 +10,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Check if user is admin
-  const { data: isAdmin, isLoading } = useQuery({
+  // Check if user is admin with improved error handling
+  const { data: isAdmin, isLoading, error: adminCheckError } = useQuery({
     queryKey: ["isAdmin"],
     queryFn: async () => {
       try {
@@ -44,16 +44,17 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           return false;
         }
 
-        console.log('Admin check result:', data);
-        return !!data;
+        const hasAdminRole = !!data;
+        console.log('User admin check result:', hasAdminRole);
+        return hasAdminRole;
       } catch (error) {
         console.error('Error in isAdmin query:', error);
         return false;
       }
     },
-    retry: 1,
+    retry: 2,
     refetchOnWindowFocus: false,
-    staleTime: 30000, // Cache the result for 30 seconds
+    staleTime: 10000, // Cache the result for 10 seconds
   });
 
   useEffect(() => {
@@ -94,6 +95,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
+  }
+
+  // If admin check failed for some reason
+  if (adminCheckError) {
+    toast.error("Error", {
+      description: "Could not verify admin permissions. Please try again."
+    });
+    console.error("Admin check error:", adminCheckError);
   }
 
   // Don't render anything if not admin

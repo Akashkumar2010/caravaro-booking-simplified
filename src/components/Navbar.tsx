@@ -11,14 +11,28 @@ export function Navbar() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Check if user is admin
-  const { data: adminStatus } = useQuery({
+  // Check if user is admin - with more robust error handling
+  const { data: adminStatus, isLoading: checkingAdmin } = useQuery({
     queryKey: ["navbarAdminCheck"],
     queryFn: async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return false;
+        // Get current session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          console.log('No active session found');
+          return false;
+        }
         
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log('No user found in the session');
+          return false;
+        }
+        
+        console.log('Checking admin role for user:', user.email);
+        
+        // Check user_roles table for admin role
         const { data, error } = await supabase
           .from('user_roles')
           .select('*')
@@ -31,20 +45,26 @@ export function Navbar() {
           return false;
         }
         
-        return !!data;
+        const isAdminUser = !!data;
+        console.log('Is admin user:', isAdminUser);
+        return isAdminUser;
       } catch (error) {
         console.error('Error in admin check query:', error);
         return false;
       }
     },
-    retry: 1,
+    retry: 2,
     refetchOnWindowFocus: false,
-    staleTime: 30000, // Cache the result for 30 seconds
+    refetchOnMount: true,
+    staleTime: 10000, // Cache the result for 10 seconds
   });
 
   useEffect(() => {
-    setIsAdmin(!!adminStatus);
-  }, [adminStatus]);
+    if (!checkingAdmin) {
+      console.log('Setting admin status to:', adminStatus);
+      setIsAdmin(!!adminStatus);
+    }
+  }, [adminStatus, checkingAdmin]);
 
   const handleSignOut = async () => {
     try {
@@ -93,7 +113,7 @@ export function Navbar() {
             </Link>
             {isAdmin && (
               <Link to="/admin">
-                <Button variant="ghost" className="gap-2">
+                <Button variant="ghost" className="gap-2 bg-primary/10">
                   <Settings className="h-4 w-4" />
                   Admin Panel
                 </Button>
