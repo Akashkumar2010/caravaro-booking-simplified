@@ -6,14 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
-interface UserRole {
-  id: string;
-  user_id: string;
-  role: 'admin' | 'user';
-  created_at: string;
-  updated_at: string;
-}
-
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
@@ -25,13 +17,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          console.log('No session found');
+          console.log('No session found, not an admin');
           return false;
         }
 
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          console.log('No user found');
+          console.log('No user found, not an admin');
           return false;
         }
         
@@ -39,7 +31,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         
         const { data, error } = await supabase
           .from('user_roles')
-          .select('role')
+          .select('*')
           .eq('user_id', user.id)
           .eq('role', 'admin')
           .maybeSingle();
@@ -63,23 +55,29 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        console.log('No session found, redirecting to auth');
-        navigate('/auth');
-        return;
-      }
-
-      if (!isLoading) {
-        if (!isAdmin) {
-          console.log('User is not admin, redirecting to home');
-          toast.error("Access Denied", {
-            description: "You don't have permission to access the admin panel."
-          });
-          navigate("/");
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.log('No session found, redirecting to auth');
+          navigate('/auth', { replace: true });
+          return;
         }
-        setIsInitialized(true);
+
+        if (!isLoading) {
+          if (!isAdmin) {
+            console.log('User is not admin, redirecting to home');
+            toast.error("Access Denied", {
+              description: "You don't have permission to access the admin panel."
+            });
+            navigate("/", { replace: true });
+            return;
+          }
+          setIsInitialized(true);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        navigate('/auth', { replace: true });
       }
     };
 

@@ -3,22 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Car, User, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Link, useNavigate } from "react-router-dom";
-import { useToast } from "./ui/use-toast";
+import { toast } from "sonner";
 
 export function Navbar() {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSignOut = async () => {
     try {
+      console.log("Signing out...");
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      navigate("/auth");
+      if (error) {
+        console.error("Sign out error:", error);
+        toast.error("Error signing out", {
+          description: error.message,
+        });
+        return;
+      }
+      console.log("Sign out successful");
+      // Force navigation to auth page
+      navigate("/auth", { replace: true });
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error signing out",
-        description: error.message,
+      console.error("Error in sign out process:", error);
+      toast.error("Error signing out", {
+        description: error.message || "An unexpected error occurred",
       });
     }
   };
