@@ -134,11 +134,10 @@ export function Services() {
           {/* Services container */}
           <div 
             ref={containerRef}
-            className="flex gap-8 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4"
           >
             {services?.map((service) => (
-              <div key={service.id} className="min-w-[320px] flex-shrink-0 snap-start">
+              <div key={service.id} className="h-full">
                 <ServiceCard
                   title={service.name}
                   description={service.description || ""}
@@ -158,7 +157,7 @@ export function Services() {
           {services?.map((_, index) => (
             <button
               key={index}
-              className={`h-2 w-2 rounded-full ${index === Math.floor(containerRef.current?.scrollLeft || 0 / 320) ? 'bg-primary' : 'bg-gray-300'}`}
+              className={`h-2 w-2 rounded-full ${index === 0 ? 'bg-primary' : 'bg-gray-300'}`}
               onClick={() => {
                 if (containerRef.current) {
                   containerRef.current.scrollTo({

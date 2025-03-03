@@ -31,29 +31,32 @@ export function ServiceCard({
 }: ServiceCardProps) {
   const navigate = useNavigate();
 
-  const handleViewDetails = () => {
-    let path = '';
-    switch (serviceType) {
+  // Function to determine service page path based on service type
+  const getServicePath = (type: string) => {
+    switch (type) {
       case 'car_wash':
-        path = '/services/car-wash';
-        break;
+        return '/services/car-wash';
       case 'driver_hire':
-        path = '/services/driver-hire';
-        break;
+        return '/services/driver-hire';
       case 'car_rental':
-        path = '/services/car-rental';
-        break;
+        return '/services/car-rental';
       case 'bus_service':
-        path = '/services/bus-service';
-        break;
+        return '/services/bus-service';
       default:
-        path = '/services';
+        return '/services';
     }
-    navigate(path);
+  };
+
+  // Handle card click to navigate to service details page
+  const handleCardClick = () => {
+    navigate(getServicePath(serviceType));
   };
 
   return (
-    <Card className="h-full overflow-hidden service-card card-hover border-gray-100">
+    <Card 
+      className="h-full overflow-hidden service-card card-hover border-gray-100 cursor-pointer transition-all duration-300 hover:shadow-lg" 
+      onClick={handleCardClick}
+    >
       {imageUrl && (
         <div className="relative h-48 w-full overflow-hidden">
           <img
@@ -87,13 +90,22 @@ export function ServiceCard({
           </div>
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
-          <Button onClick={onClick} className="w-full group btn-hover-effect">
+          <Button 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent card click event
+              onClick();
+            }} 
+            className="w-full group btn-hover-effect"
+          >
             Book Now
             <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>
           <Button 
             variant="outline" 
-            onClick={handleViewDetails} 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent card click event
+              navigate(getServicePath(serviceType));
+            }} 
             className="w-full border-primary/20 text-primary hover:bg-primary/5"
           >
             View Details
