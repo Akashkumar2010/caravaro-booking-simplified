@@ -9,11 +9,18 @@ import { supabase } from "@/lib/supabase";
 import { Service } from "@/types/database";
 import { BookingDialog } from "@/components/BookingDialog";
 import { ChevronLeft, Shield, Clock, Car, MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function CarRentalService() {
   const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  
+  // Form state
+  const [carType, setCarType] = useState("economy");
+  const [rentalDays, setRentalDays] = useState("1");
+  const [pickupLocation, setPickupLocation] = useState("");
 
   const { data: service, isLoading } = useQuery({
     queryKey: ["carRentalService"],
@@ -128,6 +135,54 @@ export default function CarRentalService() {
                       <li>Electric & Hybrid Vehicles</li>
                       <li>Specialty Vehicles</li>
                     </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Service Details Form */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Rental Details</CardTitle>
+                  <CardDescription>Choose your preferred vehicle and rental options</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="carType">Vehicle Type</Label>
+                      <select 
+                        id="carType" 
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        value={carType}
+                        onChange={(e) => setCarType(e.target.value)}
+                      >
+                        <option value="economy">Economy Car - $45/day</option>
+                        <option value="midsize">Midsize Sedan - $65/day</option>
+                        <option value="suv">SUV - $85/day</option>
+                        <option value="luxury">Luxury Vehicle - $120/day</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="rentalDays">Rental Duration (Days)</Label>
+                      <Input 
+                        id="rentalDays"
+                        type="number"
+                        min="1"
+                        max="30" 
+                        value={rentalDays}
+                        onChange={(e) => setRentalDays(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="pickupLocation">Pickup Location</Label>
+                      <Input 
+                        id="pickupLocation"
+                        placeholder="Enter your preferred pickup location"
+                        value={pickupLocation}
+                        onChange={(e) => setPickupLocation(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>

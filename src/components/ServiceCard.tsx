@@ -89,11 +89,11 @@ export function ServiceCard({
             <span>Available now</span>
           </div>
         </div>
-        <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+        <div className="flex flex-row space-x-2">
           <Button 
             onClick={(e) => {
               e.stopPropagation(); // Prevent card click event
-              onClick();
+              navigate(getServicePath(serviceType));
             }} 
             className="w-full group btn-hover-effect"
           >

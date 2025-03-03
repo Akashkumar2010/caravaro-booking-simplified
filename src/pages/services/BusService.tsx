@@ -9,11 +9,20 @@ import { supabase } from "@/lib/supabase";
 import { Service } from "@/types/database";
 import { BookingDialog } from "@/components/BookingDialog";
 import { ChevronLeft, Users, Clock, Bus, MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function BusService() {
   const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  
+  // Form state
+  const [busType, setBusType] = useState("standard");
+  const [passengerCount, setPassengerCount] = useState("25");
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [destination, setDestination] = useState("");
+  const [rentalHours, setRentalHours] = useState("4");
 
   const { data: service, isLoading } = useQuery({
     queryKey: ["busService"],
@@ -145,6 +154,75 @@ export default function BusService() {
                       <li>Tour groups and sightseeing</li>
                       <li>Airport transfers for large groups</li>
                     </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Service Details Form */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Bus Charter Details</CardTitle>
+                  <CardDescription>Customize your bus charter service</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="busType">Bus Type</Label>
+                      <select 
+                        id="busType" 
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        value={busType}
+                        onChange={(e) => setBusType(e.target.value)}
+                      >
+                        <option value="standard">Standard Coach - $250/hour</option>
+                        <option value="executive">Executive Coach - $350/hour</option>
+                        <option value="luxury">Luxury Coach - $450/hour</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="passengerCount">Number of Passengers</Label>
+                      <Input 
+                        id="passengerCount"
+                        type="number"
+                        min="10"
+                        max="60" 
+                        value={passengerCount}
+                        onChange={(e) => setPassengerCount(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="rentalHours">Rental Duration (Hours)</Label>
+                      <Input 
+                        id="rentalHours"
+                        type="number"
+                        min="2"
+                        max="24" 
+                        value={rentalHours}
+                        onChange={(e) => setRentalHours(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="pickupLocation">Pickup Location</Label>
+                      <Input 
+                        id="pickupLocation"
+                        placeholder="Enter pickup location"
+                        value={pickupLocation}
+                        onChange={(e) => setPickupLocation(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="destination">Destination</Label>
+                      <Input 
+                        id="destination"
+                        placeholder="Enter destination"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>

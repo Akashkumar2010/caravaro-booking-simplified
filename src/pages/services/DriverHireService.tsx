@@ -9,11 +9,19 @@ import { supabase } from "@/lib/supabase";
 import { Service } from "@/types/database";
 import { BookingDialog } from "@/components/BookingDialog";
 import { ChevronLeft, Shield, Clock, User } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function DriverHireService() {
   const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  
+  // Form state
+  const [driverType, setDriverType] = useState("standard");
+  const [hours, setHours] = useState("4");
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [destination, setDestination] = useState("");
 
   const { data: service, isLoading } = useQuery({
     queryKey: ["driverHireService"],
@@ -129,6 +137,63 @@ export default function DriverHireService() {
                       <li>Corporate and VIP services</li>
                       <li>Wedding and event transportation</li>
                     </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Service Details Form */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Driver Service Details</CardTitle>
+                  <CardDescription>Customize your driver hire service</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="driverType">Driver Type</Label>
+                      <select 
+                        id="driverType" 
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        value={driverType}
+                        onChange={(e) => setDriverType(e.target.value)}
+                      >
+                        <option value="standard">Standard Driver - $35/hour</option>
+                        <option value="executive">Executive Driver - $50/hour</option>
+                        <option value="vip">VIP Chauffeur - $75/hour</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="hours">Number of Hours</Label>
+                      <Input 
+                        id="hours"
+                        type="number"
+                        min="2"
+                        max="24" 
+                        value={hours}
+                        onChange={(e) => setHours(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="pickupLocation">Pickup Location</Label>
+                      <Input 
+                        id="pickupLocation"
+                        placeholder="Enter your pickup address"
+                        value={pickupLocation}
+                        onChange={(e) => setPickupLocation(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="destination">Destination</Label>
+                      <Input 
+                        id="destination"
+                        placeholder="Enter your destination (if applicable)"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>

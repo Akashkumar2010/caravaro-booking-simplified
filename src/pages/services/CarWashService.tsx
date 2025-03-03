@@ -9,11 +9,17 @@ import { supabase } from "@/lib/supabase";
 import { Service } from "@/types/database";
 import { BookingDialog } from "@/components/BookingDialog";
 import { ChevronLeft, Droplets, Shield, Timer, Car } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function CarWashService() {
   const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  
+  // Form state
+  const [washType, setWashType] = useState("basic");
+  const [specialRequests, setSpecialRequests] = useState("");
 
   const { data: service, isLoading } = useQuery({
     queryKey: ["carWashService"],
@@ -128,6 +134,42 @@ export default function CarWashService() {
                       <li>Hand drying with microfiber towels</li>
                       <li>Air freshener application</li>
                     </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Service Details Form */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Service Details</CardTitle>
+                  <CardDescription>Select your preferred wash package and options</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="washType">Wash Package</Label>
+                      <select 
+                        id="washType" 
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        value={washType}
+                        onChange={(e) => setWashType(e.target.value)}
+                      >
+                        <option value="basic">Basic Wash - $20</option>
+                        <option value="deluxe">Deluxe Wash - $35</option>
+                        <option value="premium">Premium Wash - $50</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="specialRequests">Special Requests</Label>
+                      <textarea 
+                        id="specialRequests"
+                        className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        placeholder="Any special requests or instructions"
+                        value={specialRequests}
+                        onChange={(e) => setSpecialRequests(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
