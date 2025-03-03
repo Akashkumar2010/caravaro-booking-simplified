@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Clock, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface ServiceCardProps {
   title: string;
@@ -11,9 +12,45 @@ interface ServiceCardProps {
   onClick: () => void;
   price: number;
   imageUrl: string;
+  serviceType: string;
+  rating?: number;
+  duration?: number;
 }
 
-export function ServiceCard({ title, description, icon, onClick, price, imageUrl }: ServiceCardProps) {
+export function ServiceCard({ 
+  title, 
+  description, 
+  icon, 
+  onClick, 
+  price, 
+  imageUrl, 
+  serviceType, 
+  rating = 4.9, 
+  duration = 180 
+}: ServiceCardProps) {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    let path = '';
+    switch (serviceType) {
+      case 'car_wash':
+        path = '/services/car-wash';
+        break;
+      case 'driver_hire':
+        path = '/services/driver-hire';
+        break;
+      case 'car_rental':
+        path = '/services/car-rental';
+        break;
+      case 'bus_service':
+        path = '/services/bus-service';
+        break;
+      default:
+        path = '/services';
+    }
+    navigate(path);
+  };
+
   return (
     <Card className="h-full overflow-hidden service-card card-hover border-gray-100">
       {imageUrl && (
@@ -26,11 +63,11 @@ export function ServiceCard({ title, description, icon, onClick, price, imageUrl
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium flex items-center">
             <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-            <span>4.9</span>
+            <span>{rating}</span>
           </div>
           <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium flex items-center">
             <Clock className="h-3 w-3 text-primary mr-1" />
-            <span>3h</span>
+            <span>{Math.floor(duration / 60)}h</span>
           </div>
         </div>
       )}
@@ -48,10 +85,19 @@ export function ServiceCard({ title, description, icon, onClick, price, imageUrl
             <span>Available now</span>
           </div>
         </div>
-        <Button onClick={onClick} className="w-full group btn-hover-effect">
-          Book Now
-          <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </Button>
+        <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+          <Button onClick={onClick} className="w-full group btn-hover-effect">
+            Book Now
+            <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleViewDetails} 
+            className="w-full border-primary/20 text-primary hover:bg-primary/5"
+          >
+            View Details
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

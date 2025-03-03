@@ -12,7 +12,6 @@ export function Services() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
@@ -146,6 +145,8 @@ export function Services() {
                   onClick={() => handleBookService(service)}
                   price={service.price}
                   imageUrl={service.image_url || ""}
+                  serviceType={service.type}
+                  duration={service.duration || 180}
                 />
               </div>
             ))}
@@ -156,7 +157,7 @@ export function Services() {
           {services?.map((_, index) => (
             <button
               key={index}
-              className={`h-2 w-2 rounded-full ${index === Math.floor(scrollPosition / 320) ? 'bg-primary' : 'bg-gray-300'}`}
+              className={`h-2 w-2 rounded-full ${index === Math.floor(containerRef.current?.scrollLeft || 0 / 320) ? 'bg-primary' : 'bg-gray-300'}`}
               onClick={() => {
                 if (containerRef.current) {
                   containerRef.current.scrollTo({
