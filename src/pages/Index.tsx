@@ -2,17 +2,44 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
+import { MyServices } from "@/components/MyServices";
 import { Testimonials } from "@/components/Testimonials";
 import { Features } from "@/components/Features";
 import { FAQ } from "@/components/FAQ";
 import { Contact } from "@/components/Contact";
+import { ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 400) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <Hero />
+        <MyServices />
         <Services />
         <Features />
         <Testimonials />
@@ -60,6 +87,18 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Scroll to top button */}
+      <button 
+        onClick={scrollToTop}
+        className={cn(
+          "fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-50 transition-all duration-300",
+          showScrollTop ? "opacity-100 visible" : "opacity-0 invisible"
+        )}
+        aria-label="Scroll to top"
+      >
+        <ArrowUp className="h-5 w-5" />
+      </button>
     </div>
   );
 };

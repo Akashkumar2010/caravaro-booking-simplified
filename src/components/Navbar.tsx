@@ -137,7 +137,8 @@ export function Navbar() {
           <div className="md:hidden">
             <Button 
               variant="ghost" 
-              className="relative w-10 p-0" 
+              size="icon"
+              className="h-10 w-10 p-0" 
               aria-label="Toggle menu"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
@@ -160,7 +161,17 @@ export function Navbar() {
           "fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-white p-6 shadow-lg transform transition-transform duration-300 ease-in-out",
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}>
-          <div className="flex flex-col space-y-4 mt-8">
+          <div className="flex justify-end mb-6">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10" 
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+          </div>
+          <div className="flex flex-col space-y-4">
             <Link to="/bookings" onClick={handleMobileNavClick}>
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <Calendar className="h-5 w-5" />

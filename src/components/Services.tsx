@@ -4,13 +4,17 @@ import { ServiceCard } from "./ServiceCard";
 import { supabase } from "@/lib/supabase";
 import type { Service } from "@/types/database";
 import { Car, UserCircle2, Bus } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BookingDialog } from "./BookingDialog";
+import { Button } from "./ui/button";
 
 export function Services() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const { data: services, isLoading } = useQuery({
     queryKey: ["services"],
@@ -21,33 +25,34 @@ export function Services() {
     },
   });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (services && services.length > 0) {
-        setScrollPosition((prev) => {
-          const container = document.querySelector('.services-container');
-          if (!container) return prev;
-          
-          const maxScroll = container.scrollWidth - container.clientWidth;
-          const newPosition = prev + 1;
-          
-          if (newPosition >= maxScroll) {
-            return 0;
-          }
-          return newPosition;
-        });
-      }
-    }, 50);
+  const checkScrollable = () => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
 
-    return () => clearInterval(interval);
+  useEffect(() => {
+    if (containerRef.current) {
+      checkScrollable();
+      containerRef.current.addEventListener('scroll', checkScrollable);
+    }
+    
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('scroll', checkScrollable);
+      }
+    };
   }, [services]);
 
-  useEffect(() => {
-    const container = document.querySelector('.services-container');
-    if (container) {
-      container.scrollLeft = scrollPosition;
+  const scroll = (direction: 'left' | 'right') => {
+    if (containerRef.current) {
+      const { clientWidth } = containerRef.current;
+      const scrollAmount = direction === 'left' ? -clientWidth / 2 : clientWidth / 2;
+      containerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
-  }, [scrollPosition]);
+  };
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -69,38 +74,99 @@ export function Services() {
   };
 
   if (isLoading) {
-    return <div>Loading services...</div>;
+    return (
+      <section className="section-padding bg-gray-50">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight heading-gradient sm:text-4xl">
+              Our Services
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Loading our premium car services...
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="h-80 bg-gray-200 rounded-xl animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
-    <section className="section-padding bg-gray-50">
+    <section className="section-padding bg-gradient-to-b from-gray-50 to-white">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight heading-gradient sm:text-4xl">
-            Our Services
+            Available Services
           </h2>
-          <p className="mt-4 text-lg text-gray-600">
-            Choose from our range of premium car services
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Browse and book from our range of premium car services
           </p>
         </div>
-        <div className="relative overflow-hidden">
-          <div className="services-container overflow-hidden">
-            <div className="flex gap-8 transition-all duration-300" 
-                 style={{ transform: `translateX(-${scrollPosition}px)` }}>
-              {services?.map((service) => (
-                <div key={service.id} className="w-[350px] flex-shrink-0">
-                  <ServiceCard
-                    title={service.name}
-                    description={service.description || ""}
-                    icon={getIcon(service.type)}
-                    onClick={() => handleBookService(service)}
-                    price={service.price}
-                    imageUrl={service.image_url || ""}
-                  />
-                </div>
-              ))}
-            </div>
+        
+        <div className="relative">
+          {/* Scroll buttons */}
+          {canScrollLeft && (
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm shadow-md hidden md:flex"
+              onClick={() => scroll('left')}
+            >
+              <Car className="h-4 w-4 -rotate-90" />
+            </Button>
+          )}
+          
+          {canScrollRight && (
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm shadow-md hidden md:flex"
+              onClick={() => scroll('right')}
+            >
+              <Car className="h-4 w-4 rotate-90" />
+            </Button>
+          )}
+          
+          {/* Services container */}
+          <div 
+            ref={containerRef}
+            className="flex gap-8 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {services?.map((service) => (
+              <div key={service.id} className="min-w-[320px] flex-shrink-0 snap-start">
+                <ServiceCard
+                  title={service.name}
+                  description={service.description || ""}
+                  icon={getIcon(service.type)}
+                  onClick={() => handleBookService(service)}
+                  price={service.price}
+                  imageUrl={service.image_url || ""}
+                />
+              </div>
+            ))}
           </div>
+        </div>
+        
+        <div className="flex justify-center mt-6 gap-2">
+          {services?.map((_, index) => (
+            <button
+              key={index}
+              className={`h-2 w-2 rounded-full ${index === Math.floor(scrollPosition / 320) ? 'bg-primary' : 'bg-gray-300'}`}
+              onClick={() => {
+                if (containerRef.current) {
+                  containerRef.current.scrollTo({
+                    left: index * 320,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
+            />
+          ))}
         </div>
       </div>
       <BookingDialog
