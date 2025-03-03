@@ -60,6 +60,7 @@ export function Services() {
       case "driver_hire":
         return <UserCircle2 className="h-6 w-6" />;
       case "car_rental":
+        return <Car className="h-6 w-6" />;
       case "bus_service":
         return <Bus className="h-6 w-6" />;
       default:

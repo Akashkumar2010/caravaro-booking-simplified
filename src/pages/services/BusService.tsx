@@ -18,19 +18,24 @@ export default function BusService() {
   const { data: service, isLoading } = useQuery({
     queryKey: ["busService"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("services")
-        .select("*")
-        .eq("type", "bus_service")
-        .single();
-      
-      if (error) {
+      try {
+        // First try to get bus service
+        const { data, error } = await supabase
+          .from("services")
+          .select("*")
+          .eq("type", "bus_service" as any)
+          .single();
+        
+        if (error) throw error;
+        return data as Service;
+      } catch (error) {
+        console.log("Error fetching bus service:", error);
         // If no bus service exists yet, create a fallback object
         return {
           id: "bus-service",
           name: "Bus Charter Service",
           description: "Comfortable and reliable bus charter service for groups of all sizes.",
-          type: "bus_service",
+          type: "bus_service" as any,
           price: 250,
           duration: 480,
           image_url: "/placeholder.svg",
@@ -38,7 +43,6 @@ export default function BusService() {
           updated_at: new Date().toISOString()
         } as Service;
       }
-      return data as Service;
     },
   });
 

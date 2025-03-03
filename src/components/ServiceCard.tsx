@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, Clock, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { ServiceType } from "@/types/database";
 
 interface ServiceCardProps {
   title: string;
