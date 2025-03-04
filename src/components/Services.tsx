@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ServiceCard } from "./ServiceCard";
 import { supabase } from "@/lib/supabase";
 import type { Service } from "@/types/database";
-import { Car, UserCircle2, Bus } from "lucide-react";
+import { Car, UserCircle2, Bus, ChevronRight, ChevronLeft } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { BookingDialog } from "./BookingDialog";
 import { Button } from "./ui/button";
@@ -56,15 +56,15 @@ export function Services() {
   const getIcon = (type: string) => {
     switch (type) {
       case "car_wash":
-        return <Car className="h-6 w-6" />;
+        return <Car className="h-6 w-6 text-blue-500" />;
       case "driver_hire":
-        return <UserCircle2 className="h-6 w-6" />;
+        return <UserCircle2 className="h-6 w-6 text-amber-500" />;
       case "car_rental":
-        return <Car className="h-6 w-6" />;
+        return <Car className="h-6 w-6 text-emerald-500" />;
       case "bus_service":
-        return <Bus className="h-6 w-6" />;
+        return <Bus className="h-6 w-6 text-purple-500" />;
       default:
-        return <Car className="h-6 w-6" />;
+        return <Car className="h-6 w-6 text-primary" />;
     }
   };
 
@@ -75,17 +75,17 @@ export function Services() {
 
   if (isLoading) {
     return (
-      <section className="section-padding bg-gray-50">
+      <section className="section-padding bg-gradient-to-b from-gray-50 to-white py-16">
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight heading-gradient sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent sm:text-4xl">
               Our Services
             </h2>
             <p className="mt-4 text-lg text-gray-600">
               Loading our premium car services...
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
             {[1, 2, 3].map((n) => (
               <div key={n} className="h-80 bg-gray-200 rounded-xl animate-pulse"></div>
             ))}
@@ -96,10 +96,13 @@ export function Services() {
   }
 
   return (
-    <section className="section-padding bg-gradient-to-b from-gray-50 to-white">
+    <section className="section-padding bg-gradient-to-b from-gray-50 to-white py-16">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight heading-gradient sm:text-4xl">
+          <div className="inline-block p-1 px-3 bg-primary/10 rounded-full text-primary text-sm font-medium mb-4">
+            Premium Services
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent sm:text-4xl mb-2">
             Available Services
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
@@ -113,10 +116,10 @@ export function Services() {
             <Button 
               variant="outline" 
               size="icon" 
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm shadow-md hidden md:flex"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm shadow-md hidden md:flex rounded-full"
               onClick={() => scroll('left')}
             >
-              <Car className="h-4 w-4 -rotate-90" />
+              <ChevronLeft className="h-5 w-5 text-primary" />
             </Button>
           )}
           
@@ -124,10 +127,10 @@ export function Services() {
             <Button 
               variant="outline" 
               size="icon" 
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm shadow-md hidden md:flex"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm shadow-md hidden md:flex rounded-full"
               onClick={() => scroll('right')}
             >
-              <Car className="h-4 w-4 rotate-90" />
+              <ChevronRight className="h-5 w-5 text-primary" />
             </Button>
           )}
           
@@ -137,7 +140,7 @@ export function Services() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4"
           >
             {services?.map((service) => (
-              <div key={service.id} className="h-full">
+              <div key={service.id} className="h-full transform transition-transform duration-300 hover:translate-y-[-5px]">
                 <ServiceCard
                   title={service.name}
                   description={service.description || ""}

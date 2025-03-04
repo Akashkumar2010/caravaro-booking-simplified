@@ -35,7 +35,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
       <Navbar />
       <main className="flex-grow">
         <Hero />
@@ -46,39 +46,39 @@ const Index = () => {
         <FAQ />
         <Contact />
       </main>
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Caravaro</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">Caravaro</h3>
               <p className="text-gray-400 text-sm">
                 Premium car services tailored to your needs. Quality and convenience in one place.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Services</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">Services</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li>Car Wash</li>
-                <li>Driver Hire</li>
-                <li>Car Rental</li>
-                <li>Bus Services</li>
+                <li className="hover:text-gray-300 transition-colors">Car Wash</li>
+                <li className="hover:text-gray-300 transition-colors">Driver Hire</li>
+                <li className="hover:text-gray-300 transition-colors">Car Rental</li>
+                <li className="hover:text-gray-300 transition-colors">Bus Services</li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">Company</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li>About Us</li>
-                <li>Careers</li>
-                <li>Privacy Policy</li>
-                <li>Terms of Service</li>
+                <li className="hover:text-gray-300 transition-colors">About Us</li>
+                <li className="hover:text-gray-300 transition-colors">Careers</li>
+                <li className="hover:text-gray-300 transition-colors">Privacy Policy</li>
+                <li className="hover:text-gray-300 transition-colors">Terms of Service</li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Contact</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">Contact</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li>info@caravaro.com</li>
-                <li>+1 (555) 123-4567</li>
-                <li>123 Car Street, Auto City</li>
+                <li className="hover:text-gray-300 transition-colors">info@caravaro.com</li>
+                <li className="hover:text-gray-300 transition-colors">+1 (555) 123-4567</li>
+                <li className="hover:text-gray-300 transition-colors">123 Car Street, Auto City</li>
               </ul>
             </div>
           </div>
@@ -92,7 +92,7 @@ const Index = () => {
       <button 
         onClick={scrollToTop}
         className={cn(
-          "fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-50 transition-all duration-300",
+          "fixed bottom-6 right-6 bg-gradient-to-r from-primary to-blue-600 text-white p-3 rounded-full shadow-lg z-50 transition-all duration-300 hover:shadow-xl",
           showScrollTop ? "opacity-100 visible" : "opacity-0 invisible"
         )}
         aria-label="Scroll to top"

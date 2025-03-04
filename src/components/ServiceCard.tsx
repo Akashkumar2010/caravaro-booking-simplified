@@ -52,9 +52,44 @@ export function ServiceCard({
     navigate(getServicePath(serviceType));
   };
 
+  // Function to get background gradient based on service type
+  const getCardGradient = (type: string) => {
+    switch (type) {
+      case 'car_wash':
+        return 'bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200';
+      case 'driver_hire':
+        return 'bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200';
+      case 'car_rental':
+        return 'bg-gradient-to-br from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200';
+      case 'bus_service':
+        return 'bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200';
+      default:
+        return 'bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200';
+    }
+  };
+
+  // Function to get button gradient based on service type
+  const getButtonGradient = (type: string) => {
+    switch (type) {
+      case 'car_wash':
+        return 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700';
+      case 'driver_hire':
+        return 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700';
+      case 'car_rental':
+        return 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700';
+      case 'bus_service':
+        return 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700';
+      default:
+        return 'bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary';
+    }
+  };
+
   return (
     <Card 
-      className="h-full overflow-hidden service-card card-hover border-gray-100 cursor-pointer transition-all duration-300 hover:shadow-lg" 
+      className={cn(
+        "h-full overflow-hidden service-card transition-all duration-300 hover:shadow-lg border-0", 
+        getCardGradient(serviceType)
+      )} 
       onClick={handleCardClick}
     >
       {imageUrl && (
@@ -64,28 +99,28 @@ export function ServiceCard({
             alt={title}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium flex items-center">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium flex items-center shadow-sm">
             <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
             <span>{rating}</span>
           </div>
-          <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium flex items-center">
+          <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium flex items-center shadow-sm">
             <Clock className="h-3 w-3 text-primary mr-1" />
             <span>{Math.floor(duration / 60)}h</span>
           </div>
         </div>
       )}
-      <CardHeader>
+      <CardHeader className="pb-2">
         <div className="flex items-center space-x-4">
-          <div className="p-2 rounded-full bg-primary/5">{icon}</div>
+          <div className="p-2 rounded-full bg-white/80 shadow-sm">{icon}</div>
           <CardTitle className="text-xl">{title}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
-        <CardDescription className="mb-4 line-clamp-3">{description}</CardDescription>
+        <CardDescription className="mb-4 line-clamp-3 text-gray-700">{description}</CardDescription>
         <div className="flex items-center justify-between mb-4">
           <span className="text-lg font-bold text-primary">${price.toFixed(2)}</span>
-          <div className="flex items-center text-sm text-gray-500">
+          <div className="flex items-center text-sm text-gray-500 bg-white/50 px-2 py-1 rounded-full">
             <span>Available now</span>
           </div>
         </div>
@@ -95,7 +130,7 @@ export function ServiceCard({
               e.stopPropagation(); // Prevent card click event
               navigate(getServicePath(serviceType));
             }} 
-            className="w-full group btn-hover-effect"
+            className={cn("w-full text-white group btn-hover-effect border-0", getButtonGradient(serviceType))}
           >
             Book Now
             <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
