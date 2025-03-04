@@ -10,23 +10,8 @@ import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-
-interface BookingDialogProps {
-  service: Service | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-interface LocationDetails {
-  pickup: string;
-  destination: string;
-}
-
-interface CarRentalDetails {
-  seatingCapacity: string;
-  rentalDuration: number;
-}
+import { BookingDialogProps, LocationDetails, CarRentalDetails } from "./booking/types";
+import { ServiceSpecificFields } from "./booking/ServiceSpecificFields";
 
 export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) {
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -184,127 +169,6 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
     }
   };
 
-  const renderServiceSpecificFields = () => {
-    if (!service) return null;
-
-    switch (service.type) {
-      case "car_wash":
-      case "car_rental":
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Select Vehicle</Label>
-              <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a vehicle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicles.map((vehicle) => (
-                    <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.make} {vehicle.model} ({vehicle.license_plate})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Or Add New Vehicle</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  placeholder="Make"
-                  value={newVehicle.make}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, make: e.target.value })}
-                />
-                <Input
-                  placeholder="Model"
-                  value={newVehicle.model}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, model: e.target.value })}
-                />
-                <Input
-                  placeholder="Year"
-                  type="number"
-                  value={newVehicle.year}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, year: e.target.value })}
-                />
-                <Input
-                  placeholder="License Plate"
-                  value={newVehicle.licensePlate}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, licensePlate: e.target.value })}
-                />
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleAddVehicle}
-                disabled={!newVehicle.make || !newVehicle.model || !newVehicle.year || !newVehicle.licensePlate}
-              >
-                Add Vehicle
-              </Button>
-            </div>
-
-            {service.type === "car_rental" && (
-              <div className="space-y-2">
-                <Label>Seating Capacity</Label>
-                <Select
-                  value={carRentalDetails.seatingCapacity}
-                  onValueChange={(value) => setCarRentalDetails({ ...carRentalDetails, seatingCapacity: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select seating capacity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5 Seater</SelectItem>
-                    <SelectItem value="7">7 Seater</SelectItem>
-                    <SelectItem value="9">9 Seater</SelectItem>
-                    <SelectItem value="12">12 Seater Mini Bus</SelectItem>
-                    <SelectItem value="20">20 Seater Bus</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Label>Rental Duration (days)</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={carRentalDetails.rentalDuration}
-                  onChange={(e) => setCarRentalDetails({
-                    ...carRentalDetails,
-                    rentalDuration: parseInt(e.target.value) || 1
-                  })}
-                />
-              </div>
-            )}
-          </div>
-        );
-
-      case "driver_hire":
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Pickup Location</Label>
-              <Input
-                placeholder="Enter pickup location"
-                value={locationDetails.pickup}
-                onChange={(e) => setLocationDetails({ ...locationDetails, pickup: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Destination</Label>
-              <Input
-                placeholder="Enter destination"
-                value={locationDetails.destination}
-                onChange={(e) => setLocationDetails({ ...locationDetails, destination: e.target.value })}
-              />
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -323,7 +187,19 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
             disabled={(date) => date < new Date()}
           />
           
-          {renderServiceSpecificFields()}
+          <ServiceSpecificFields
+            service={service}
+            vehicles={vehicles}
+            selectedVehicle={selectedVehicle}
+            setSelectedVehicle={setSelectedVehicle}
+            newVehicle={newVehicle}
+            setNewVehicle={setNewVehicle}
+            handleAddVehicle={handleAddVehicle}
+            locationDetails={locationDetails}
+            setLocationDetails={setLocationDetails}
+            carRentalDetails={carRentalDetails}
+            setCarRentalDetails={setCarRentalDetails}
+          />
 
           <div className="space-y-2">
             <Label>Coupon Code</Label>
