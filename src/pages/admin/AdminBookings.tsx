@@ -2,7 +2,7 @@
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { supabase } from "@/lib/supabase";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Booking, Service, Profile } from "@/types/database";
+import { Booking, Service, Profile, ServiceStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,7 @@ type BookingWithDetails = Booking & {
 
 export default function AdminBookings() {
   const queryClient = useQueryClient();
-  const [filterStatus, setFilterStatus] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<ServiceStatus | null>(null);
   const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
 
   // Fetch all bookings with service and user details
@@ -53,10 +53,10 @@ export default function AdminBookings() {
 
   // Update booking status mutation
   const updateBookingStatus = useMutation({
-    mutationFn: async ({ bookingId, status }: { bookingId: string; status: string }) => {
+    mutationFn: async ({ bookingId, status }: { bookingId: string; status: ServiceStatus }) => {
       const { error } = await supabase
         .from("bookings")
-        .update({ status, special_requests: adminNotes[bookingId] || undefined })
+        .update({ status, admin_notes: adminNotes[bookingId] || null })
         .eq("id", bookingId);
       
       if (error) {
@@ -77,7 +77,7 @@ export default function AdminBookings() {
   });
 
   // Handle status update
-  const handleStatusUpdate = (bookingId: string, status: string) => {
+  const handleStatusUpdate = (bookingId: string, status: ServiceStatus) => {
     updateBookingStatus.mutate({ bookingId, status });
   };
 
@@ -208,13 +208,19 @@ export default function AdminBookings() {
                           {booking.special_requests}
                         </div>
                       )}
+                      {booking.admin_notes && (
+                        <div>
+                          <span className="font-medium">Admin Notes: </span>
+                          {booking.admin_notes}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="font-medium">Admin Notes:</div>
                     <Textarea
                       placeholder="Add notes about this booking"
-                      value={adminNotes[booking.id] || booking.special_requests || ""}
+                      value={adminNotes[booking.id] || booking.admin_notes || ""}
                       onChange={(e) => handleNotesChange(booking.id, e.target.value)}
                       className="h-24"
                     />

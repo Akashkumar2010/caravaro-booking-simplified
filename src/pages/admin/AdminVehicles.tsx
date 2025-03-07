@@ -12,11 +12,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Pencil, Trash } from "lucide-react";
 import { RentalVehicle } from "@/types/database";
 
+type VehicleFormData = {
+  name: string;
+  type: string;
+  seating_capacity: number;
+  price_per_day: number;
+  availability_status: string;
+  image_url: string;
+};
+
 export default function AdminVehicles() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<RentalVehicle | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<VehicleFormData>({
     name: "",
     type: "",
     seating_capacity: 0,
@@ -46,7 +55,7 @@ export default function AdminVehicles() {
 
   // Create or update vehicle mutation
   const upsertVehicle = useMutation({
-    mutationFn: async (vehicleData: Partial<RentalVehicle>) => {
+    mutationFn: async (vehicleData: VehicleFormData) => {
       let response;
 
       if (editingVehicle) {
