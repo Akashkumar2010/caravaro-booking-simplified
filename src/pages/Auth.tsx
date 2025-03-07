@@ -24,6 +24,8 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
+        // Sign up flow
+        console.log("Attempting to sign up with:", email);
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -33,24 +35,52 @@ export default function Auth() {
             },
           },
         });
-        if (error) throw error;
+        
+        if (error) {
+          console.error("Sign up error:", error);
+          throw error;
+        }
+        
         toast({
-          title: "Success!",
-          description: "Please check your email for verification.",
+          title: "Account created!",
+          description: "Please check your email for verification or proceed to login.",
         });
+        
+        // Automatically switch to login mode
+        setIsSignUp(false);
       } else {
+        // Sign in flow
+        console.log("Attempting to sign in with:", email);
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (error) throw error;
+        
+        if (error) {
+          console.error("Sign in error:", error);
+          throw error;
+        }
+        
+        console.log("Login successful, navigating to homepage");
         navigate("/");
       }
     } catch (error: any) {
+      console.error("Auth error:", error);
+      
+      // Provide more specific error messages
+      let errorMessage = error.message;
+      if (error.message.includes("invalid login credentials")) {
+        errorMessage = "The email or password you entered is incorrect. Please check your credentials and try again.";
+      } else if (error.message.includes("already registered")) {
+        errorMessage = "This email is already registered. Please try logging in instead.";
+      } else if (error.message.includes("Password should be")) {
+        errorMessage = "Password must be at least 6 characters long and include a mix of letters, numbers, and special characters.";
+      }
+      
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message,
+        title: "Authentication Error",
+        description: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -133,11 +163,14 @@ export default function Auth() {
                     required
                   />
                 </div>
+                <p className="text-xs text-gray-500">
+                  {isSignUp ? "Password must be at least 6 characters" : ""}
+                </p>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full bg-gradient-to-r from-gray-900 to-gray-600 hover:from-gray-800 hover:to-gray-500" disabled={loading}>
-                {loading ? "Loading..." : isSignUp ? "Sign up" : "Sign in"}
+                {loading ? "Processing..." : isSignUp ? "Sign up" : "Sign in"}
               </Button>
               <Button
                 type="button"
