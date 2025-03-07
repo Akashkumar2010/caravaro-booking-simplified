@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +10,9 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Bookings from "./pages/Bookings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminBookings from "./pages/admin/AdminBookings";
+import AdminVehicles from "./pages/admin/AdminVehicles";
+import AdminBusService from "./pages/admin/AdminBusService";
 import CarWashService from "./pages/services/CarWashService";
 import DriverHireService from "./pages/services/DriverHireService";
 import CarRentalService from "./pages/services/CarRentalService";
@@ -63,11 +67,19 @@ const App = () => {
             <Route path="/" element={session ? <Index /> : <Navigate to="/auth" replace />} />
             <Route path="/profile" element={session ? <Profile /> : <Navigate to="/auth" replace />} />
             <Route path="/bookings" element={session ? <Bookings /> : <Navigate to="/auth" replace />} />
-            <Route path="/admin/*" element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />} />
+            
+            {/* Admin routes */}
+            <Route path="/admin" element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />} />
+            <Route path="/admin/bookings" element={session ? <AdminBookings /> : <Navigate to="/auth" replace />} />
+            <Route path="/admin/vehicles" element={session ? <AdminVehicles /> : <Navigate to="/auth" replace />} />
+            <Route path="/admin/bus-service" element={session ? <AdminBusService /> : <Navigate to="/auth" replace />} />
+            
+            {/* Service routes */}
             <Route path="/services/car-wash" element={session ? <CarWashService /> : <Navigate to="/auth" replace />} />
             <Route path="/services/driver-hire" element={session ? <DriverHireService /> : <Navigate to="/auth" replace />} />
             <Route path="/services/car-rental" element={session ? <CarRentalService /> : <Navigate to="/auth" replace />} />
             <Route path="/services/bus-service" element={session ? <BusService /> : <Navigate to="/auth" replace />} />
+            
             <Route path="/auth" element={!session ? <Auth /> : <Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

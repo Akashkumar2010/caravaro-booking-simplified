@@ -37,6 +37,7 @@ export interface Booking {
   destination?: string | null;
   rental_duration?: number | null;
   seating_capacity?: string | null;
+  admin_notes?: string | null;
 }
 
 export interface Vehicle {
@@ -60,4 +61,5 @@ export interface RentalVehicle {
   image_url: string | null;
   created_at: string;
   updated_at: string;
+  description?: string | null;
 }

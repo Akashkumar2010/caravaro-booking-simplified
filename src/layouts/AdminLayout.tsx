@@ -129,6 +129,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <Link to="/admin/users" className="block p-2 hover:bg-primary/5 rounded">
                 Users
               </Link>
+              <Link to="/admin/vehicles" className="block p-2 hover:bg-primary/5 rounded">
+                Vehicles
+              </Link>
+              <Link to="/admin/bus-service" className="block p-2 hover:bg-primary/5 rounded">
+                Bus Service
+              </Link>
             </nav>
           </aside>
           <main className="flex-1 glass p-6 rounded-lg">
