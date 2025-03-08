@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Service, Vehicle } from "@/types/database";
 import { supabase } from "@/lib/supabase";
@@ -12,6 +12,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { BookingDialogProps, LocationDetails, CarRentalDetails } from "./booking/types";
 import { ServiceSpecificFields } from "./booking/ServiceSpecificFields";
+import { Loader2 } from "lucide-react";
 
 export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) {
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -33,8 +34,11 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
   const [carRentalDetails, setCarRentalDetails] = useState<CarRentalDetails>({
     seatingCapacity: "",
     rentalDuration: 1,
+    pickupLocation: "",
+    returnLocation: "",
+    carType: "economy",
+    insurance: "basic"
   });
-  const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
@@ -55,16 +59,19 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
       if (error) throw error;
       setVehicles(data);
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch vehicles",
+      toast.error("Failed to fetch vehicles", {
+        description: error.message
       });
     }
   };
 
   const handleAddVehicle = async () => {
     try {
+      if (!newVehicle.make || !newVehicle.model || !newVehicle.year || !newVehicle.licensePlate) {
+        toast.error("All vehicle fields are required");
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not found");
 
@@ -82,35 +89,22 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
       setSelectedVehicle(data.id);
       setNewVehicle({ make: "", model: "", year: "", licensePlate: "" });
 
-      toast({
-        title: "Success",
-        description: "Vehicle added successfully",
-      });
+      toast.success("Vehicle added successfully");
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
+      toast.error("Error adding vehicle", {
+        description: error.message
       });
     }
   };
 
   const handleBooking = async () => {
     if (!service || !date) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please select a date for your booking",
-      });
+      toast.error("Please select a date for your booking");
       return;
     }
 
-    if ((service.type === "car_wash" || service.type === "car_rental") && !selectedVehicle) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please select or add a vehicle",
-      });
+    if ((service.type === "car_wash") && !selectedVehicle) {
+      toast.error("Please select or add a vehicle");
       return;
     }
 
@@ -131,7 +125,7 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
       };
 
       // Add service-specific details
-      if (service.type === "car_wash" || service.type === "car_rental") {
+      if (service.type === "car_wash") {
         bookingData.vehicle_id = selectedVehicle;
       }
 
@@ -143,6 +137,8 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
       if (service.type === "car_rental") {
         bookingData.seating_capacity = carRentalDetails.seatingCapacity;
         bookingData.rental_duration = carRentalDetails.rentalDuration;
+        bookingData.pickup_location = carRentalDetails.pickupLocation;
+        bookingData.destination = carRentalDetails.returnLocation;
       }
 
       if (couponCode) {
@@ -153,16 +149,13 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Your booking has been confirmed!",
+      toast.success("Your booking has been confirmed!", {
+        description: "You can view your booking details in your profile."
       });
       onClose();
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
+      toast.error("Booking failed", {
+        description: error.message
       });
     } finally {
       setLoading(false);
@@ -171,7 +164,7 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Book {service?.name}</DialogTitle>
           <DialogDescription>
@@ -183,7 +176,7 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
             mode="single"
             selected={date}
             onSelect={setDate}
-            className="rounded-md border"
+            className="rounded-md border mx-auto"
             disabled={(date) => date < new Date()}
           />
           
@@ -210,18 +203,28 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
             />
           </div>
 
-          <Textarea
-            placeholder="Any special requests or notes?"
-            value={specialRequests}
-            onChange={(e) => setSpecialRequests(e.target.value)}
-          />
+          <div className="space-y-2">
+            <Label>Special Requests</Label>
+            <Textarea
+              placeholder="Any special requests or notes?"
+              value={specialRequests}
+              onChange={(e) => setSpecialRequests(e.target.value)}
+            />
+          </div>
         </div>
         <DialogFooter>
           <Button onClick={onClose} variant="outline">
             Cancel
           </Button>
           <Button onClick={handleBooking} disabled={loading}>
-            {loading ? "Booking..." : "Confirm Booking"}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Booking...
+              </>
+            ) : (
+              "Confirm Booking"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

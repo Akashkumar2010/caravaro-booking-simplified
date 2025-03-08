@@ -1,5 +1,8 @@
 
 import { Service, Vehicle } from "@/types/database";
+import { CarWashFormData } from "../services/car-wash/CarWashForm";
+import { DriverHireFormData } from "../services/driver-hire/DriverHireForm";
+import { CarRentalFormData } from "../services/car-rental/CarRentalForm";
 
 export interface BookingDialogProps {
   service: Service | null;
@@ -15,6 +18,10 @@ export interface LocationDetails {
 export interface CarRentalDetails {
   seatingCapacity: string;
   rentalDuration: number;
+  pickupLocation?: string;
+  returnLocation?: string;
+  carType?: string;
+  insurance?: string;
 }
 
 export interface VehicleFormProps {

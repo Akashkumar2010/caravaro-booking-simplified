@@ -1,9 +1,9 @@
 
 import { ServiceSpecificFieldsProps } from "./types";
 import { VehicleForm } from "./VehicleForm";
-import { CarRentalForm } from "./CarRentalForm";
 import { DriverHireForm, DriverHireFormData } from "../services/driver-hire/DriverHireForm";
 import { CarWashForm, CarWashFormData } from "../services/car-wash/CarWashForm";
+import { CarRentalForm, CarRentalFormData } from "../services/car-rental/CarRentalForm";
 import { useState } from "react";
 
 export function ServiceSpecificFields({
@@ -52,6 +52,19 @@ export function ServiceSpecificFields({
     setCarWashData(formData);
   };
 
+  const handleCarRentalFormChange = (formData: CarRentalFormData) => {
+    if (setCarRentalDetails) {
+      setCarRentalDetails({
+        seatingCapacity: formData.carType === "suv" ? "5-7" : formData.carType === "luxury" ? "4-5" : "4",
+        rentalDuration: parseInt(formData.rentalDays) || 1,
+        pickupLocation: formData.pickupLocation,
+        returnLocation: formData.returnLocation,
+        carType: formData.carType,
+        insurance: formData.insurance
+      });
+    }
+  };
+
   if (!service) return null;
 
   switch (service.type) {
@@ -72,18 +85,7 @@ export function ServiceSpecificFields({
     case "car_rental":
       return (
         <div className="space-y-4">
-          <VehicleForm
-            vehicles={vehicles}
-            selectedVehicle={selectedVehicle}
-            setSelectedVehicle={setSelectedVehicle}
-            newVehicle={newVehicle}
-            setNewVehicle={setNewVehicle}
-            handleAddVehicle={handleAddVehicle}
-          />
-          <CarRentalForm
-            carRentalDetails={carRentalDetails}
-            setCarRentalDetails={setCarRentalDetails}
-          />
+          <CarRentalForm onFormChange={handleCarRentalFormChange} />
         </div>
       );
     case "driver_hire":
