@@ -130,7 +130,7 @@ export default function AdminServices() {
     setFormData({
       name: service.name,
       description: service.description || "",
-      type: service.type,
+      type: service.type === 'bus_service' ? 'car_rental' : service.type as "car_wash" | "driver_hire" | "car_rental",
       price: service.price,
       duration: service.duration || 0,
       image_url: service.image_url || ""

@@ -1,4 +1,3 @@
-
 export type ServiceType = 'car_wash' | 'driver_hire' | 'car_rental' | 'bus_service';
 export type ServiceStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
 
