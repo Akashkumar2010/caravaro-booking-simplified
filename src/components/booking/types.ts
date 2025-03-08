@@ -66,3 +66,13 @@ export interface ServiceSpecificFieldsProps {
   carRentalDetails: CarRentalDetails;
   setCarRentalDetails: (details: CarRentalDetails) => void;
 }
+
+// Adding a type for admin service form data that matches what Supabase expects
+export interface ServiceFormData {
+  name: string;
+  description: string;
+  type: "car_wash" | "driver_hire" | "car_rental" | "bus_service";
+  price: number;
+  duration: number;
+  image_url: string;
+}

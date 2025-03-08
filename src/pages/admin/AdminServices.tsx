@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Service, ServiceType } from "@/types/database";
+import { ServiceFormData } from "@/components/booking/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,10 +18,10 @@ export default function AdminServices() {
   const queryClient = useQueryClient();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ServiceFormData>({
     name: "",
     description: "",
-    type: "car_wash" as ServiceType,
+    type: "car_wash",
     price: 0,
     duration: 0,
     image_url: ""
@@ -41,10 +41,10 @@ export default function AdminServices() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (newService: Omit<Service, "id" | "created_at" | "updated_at">) => {
+    mutationFn: async (newService: ServiceFormData) => {
       const { data, error } = await supabase
         .from("services")
-        .insert([newService])
+        .insert(newService)
         .select()
         .single();
       
@@ -65,7 +65,7 @@ export default function AdminServices() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (service: Partial<Service> & { id: string }) => {
+    mutationFn: async (service: ServiceFormData & { id: string }) => {
       const { data, error } = await supabase
         .from("services")
         .update(service)
@@ -262,7 +262,9 @@ export default function AdminServices() {
                 <Label className="text-right">Type</Label>
                 <Select 
                   value={formData.type} 
-                  onValueChange={(value) => setFormData({ ...formData, type: value as ServiceType })}
+                  onValueChange={(value: "car_wash" | "driver_hire" | "car_rental" | "bus_service") => 
+                    setFormData({ ...formData, type: value })
+                  }
                 >
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select service type" />
