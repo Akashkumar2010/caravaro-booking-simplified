@@ -71,7 +71,7 @@ export interface ServiceSpecificFieldsProps {
 export interface ServiceFormData {
   name: string;
   description: string;
-  type: "car_wash" | "driver_hire" | "car_rental" | "bus_service";
+  type: "car_wash" | "driver_hire" | "car_rental";
   price: number;
   duration: number;
   image_url: string;

@@ -44,7 +44,14 @@ export default function AdminServices() {
     mutationFn: async (newService: ServiceFormData) => {
       const { data, error } = await supabase
         .from("services")
-        .insert(newService)
+        .insert(newService as { 
+          name: string;
+          description: string;
+          type: "car_wash" | "driver_hire" | "car_rental";
+          price: number;
+          duration: number;
+          image_url: string;
+        })
         .select()
         .single();
       
@@ -68,7 +75,15 @@ export default function AdminServices() {
     mutationFn: async (service: ServiceFormData & { id: string }) => {
       const { data, error } = await supabase
         .from("services")
-        .update(service)
+        .update(service as {
+          id: string;
+          name?: string;
+          description?: string;
+          type?: "car_wash" | "driver_hire" | "car_rental";
+          price?: number;
+          duration?: number;
+          image_url?: string;
+        })
         .eq("id", service.id)
         .select()
         .single();
@@ -262,7 +277,7 @@ export default function AdminServices() {
                 <Label className="text-right">Type</Label>
                 <Select 
                   value={formData.type} 
-                  onValueChange={(value: "car_wash" | "driver_hire" | "car_rental" | "bus_service") => 
+                  onValueChange={(value: "car_wash" | "driver_hire" | "car_rental") => 
                     setFormData({ ...formData, type: value })
                   }
                 >
@@ -273,7 +288,6 @@ export default function AdminServices() {
                     <SelectItem value="car_wash">Car Wash</SelectItem>
                     <SelectItem value="driver_hire">Driver Hire</SelectItem>
                     <SelectItem value="car_rental">Car Rental</SelectItem>
-                    <SelectItem value="bus_service">Bus Service</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
