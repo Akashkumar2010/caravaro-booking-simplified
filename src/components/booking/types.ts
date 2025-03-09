@@ -24,6 +24,15 @@ export interface CarRentalDetails {
   insurance?: string;
 }
 
+export interface BusServiceDetails {
+  pickupLocation: string;
+  destination: string;
+  passengers: number;
+  tripType: 'one-way' | 'round-trip';
+  departureDate: string;
+  returnDate?: string;
+}
+
 export interface VehicleFormProps {
   vehicles: Vehicle[];
   selectedVehicle: string;
@@ -65,6 +74,8 @@ export interface ServiceSpecificFieldsProps {
   setLocationDetails: (details: LocationDetails) => void;
   carRentalDetails: CarRentalDetails;
   setCarRentalDetails: (details: CarRentalDetails) => void;
+  busServiceDetails?: BusServiceDetails;
+  setBusServiceDetails?: (details: BusServiceDetails) => void;
 }
 
 // Adding a type for admin service form data that matches what Supabase expects

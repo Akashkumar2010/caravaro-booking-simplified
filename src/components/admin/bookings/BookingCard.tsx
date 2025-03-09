@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Booking, Profile, Service, ServiceStatus } from "@/types/database";
 import { format } from "date-fns";
 import { Check, CheckCircle, Clock, RefreshCw, X } from "lucide-react";
-import { useState } from "react";
 
 type BookingWithDetails = Booking & {
   service: Service;

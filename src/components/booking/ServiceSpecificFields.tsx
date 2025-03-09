@@ -4,6 +4,7 @@ import { VehicleForm } from "./VehicleForm";
 import { DriverHireForm, DriverHireFormData } from "../services/driver-hire/DriverHireForm";
 import { CarWashForm, CarWashFormData } from "../services/car-wash/CarWashForm";
 import { CarRentalForm, CarRentalFormData } from "../services/car-rental/CarRentalForm";
+import { BusServiceForm, BusServiceFormData } from "../services/bus-service/BusServiceForm";
 import { useState } from "react";
 
 export function ServiceSpecificFields({
@@ -17,7 +18,9 @@ export function ServiceSpecificFields({
   locationDetails,
   setLocationDetails,
   carRentalDetails,
-  setCarRentalDetails
+  setCarRentalDetails,
+  busServiceDetails,
+  setBusServiceDetails
 }: ServiceSpecificFieldsProps) {
   const [driverHireData, setDriverHireData] = useState<DriverHireFormData>({
     driverType: "standard",
@@ -65,6 +68,23 @@ export function ServiceSpecificFields({
     }
   };
 
+  const handleBusServiceFormChange = (formData: BusServiceFormData) => {
+    if (setBusServiceDetails) {
+      setBusServiceDetails({
+        ...formData,
+        returnDate: formData.returnDate || ''
+      });
+      
+      // Also update locationDetails for consistency
+      if (setLocationDetails) {
+        setLocationDetails({
+          pickup: formData.pickupLocation,
+          destination: formData.destination
+        });
+      }
+    }
+  };
+
   if (!service) return null;
 
   switch (service.type) {
@@ -97,7 +117,7 @@ export function ServiceSpecificFields({
     case "bus_service":
       return (
         <div className="space-y-4">
-          <p className="text-sm text-gray-500">Bus service specifics will be discussed after booking.</p>
+          <BusServiceForm onFormChange={handleBusServiceFormChange} />
         </div>
       );
     default:
