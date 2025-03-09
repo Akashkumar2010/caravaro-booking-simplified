@@ -4,18 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Bus, Calendar, Users, MapPin } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { RentalVehicle } from "@/types/database";
+import { Form } from "@/components/ui/form";
+import { Bus, Users } from "lucide-react";
+import { z } from "zod";
+import { formSchema } from "./BusServiceFormSchema";
+import { BusServiceFormFields } from "./BusServiceFormFields";
+import { useBusServiceForm } from "@/hooks/bus-service/useBusServiceForm";
 
 // Define the BusServiceFormData type for use with onFormChange prop
 export interface BusServiceFormData {
@@ -27,23 +24,14 @@ export interface BusServiceFormData {
   returnDate?: string;
 }
 
-const formSchema = z.object({
-  scheduled_time: z.string().min(1, "Please select a date and time"),
-  pickup_location: z.string().min(3, "Please enter a pickup location"),
-  destination: z.string().min(3, "Please enter a destination"),
-  rental_duration: z.coerce.number().min(1, "Please enter rental duration"),
-  seating_capacity: z.string().min(1, "Please select a seating capacity"),
-  special_requests: z.string().optional(),
-  rental_vehicle_id: z.string().min(1, "Please select a bus")
-});
-
-interface BusServiceFormProps {
+export interface BusServiceFormProps {
   onFormChange?: (formData: BusServiceFormData) => void;
 }
 
 export function BusServiceForm({ onFormChange }: BusServiceFormProps = {}) {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { buses, isLoadingBuses } = useBusServiceForm();
   
   // Create state to track form values for the onFormChange callback
   const [formData, setFormData] = useState<BusServiceFormData>({
@@ -52,21 +40,6 @@ export function BusServiceForm({ onFormChange }: BusServiceFormProps = {}) {
     passengers: 0,
     tripType: 'one-way',
     departureDate: ""
-  });
-
-  // Fetch available buses
-  const { data: buses, isLoading: isLoadingBuses } = useQuery({
-    queryKey: ["buses"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rental_vehicles")
-        .select("*")
-        .eq("type", "bus")
-        .eq("availability_status", "available");
-      
-      if (error) throw error;
-      return data as RentalVehicle[];
-    },
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -179,154 +152,10 @@ export function BusServiceForm({ onFormChange }: BusServiceFormProps = {}) {
       <CardContent>
         <Form {...form}>
           <form onChange={() => updateFormData(form.getValues())} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="scheduled_time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date and Time</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <Input type="datetime-local" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="rental_duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rental Duration (Days)</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="1" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="pickup_location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pickup Location</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <Input {...field} placeholder="Enter pickup address" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="destination"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Destination</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <Input {...field} placeholder="Enter destination address" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="seating_capacity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Required Seating Capacity</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select seating capacity" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="up to 20">Up to 20 passengers</SelectItem>
-                        <SelectItem value="21-30">21-30 passengers</SelectItem>
-                        <SelectItem value="31-40">31-40 passengers</SelectItem>
-                        <SelectItem value="41-50">41-50 passengers</SelectItem>
-                        <SelectItem value="50+">More than 50 passengers</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="rental_vehicle_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Select Bus</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={isLoadingBuses || !buses?.length}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={isLoadingBuses ? "Loading buses..." : "Select a bus"} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {buses?.map((bus) => (
-                          <SelectItem key={bus.id} value={bus.id}>
-                            {bus.name} - {bus.seating_capacity} seats
-                          </SelectItem>
-                        ))}
-                        {!isLoadingBuses && !buses?.length && (
-                          <SelectItem value="none" disabled>No buses available</SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="special_requests"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Special Requests</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter any special requirements or additional information"
-                      className="resize-y"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Optional: Let us know if you have any special requirements
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <BusServiceFormFields 
+              form={form} 
+              buses={buses} 
+              isLoadingBuses={isLoadingBuses} 
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
