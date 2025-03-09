@@ -44,12 +44,17 @@ export function BookingCard({
     }
   };
 
+  const handleStatusChange = (status: ServiceStatus) => {
+    console.log(`Updating booking ${booking.id} to status: ${status}`);
+    onStatusUpdate(booking.id, status);
+  };
+
   return (
     <Card key={booking.id} className="overflow-hidden">
       <CardHeader className="bg-gray-50">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg">
-            {booking.service.name} - {booking.profile.full_name || "Anonymous User"}
+            {booking.service?.name || "Unknown Service"} - {booking.profile?.full_name || "Anonymous User"}
           </CardTitle>
           {getStatusBadge(booking.status)}
         </div>
@@ -64,11 +69,11 @@ export function BookingCard({
               </div>
               <div>
                 <span className="font-medium">Service Type: </span>
-                {booking.service.type}
+                {booking.service?.type || "Unknown"}
               </div>
               <div>
                 <span className="font-medium">Price: </span>
-                ${booking.service.price}
+                ${booking.service?.price || "N/A"}
               </div>
               {booking.pickup_location && (
                 <div>
@@ -85,7 +90,7 @@ export function BookingCard({
               {booking.rental_duration && (
                 <div>
                   <span className="font-medium">Rental Duration: </span>
-                  {booking.rental_duration} days
+                  {booking.rental_duration} {booking.rental_duration === 1 ? 'day' : 'days'}
                 </div>
               )}
               {booking.special_requests && (
@@ -96,7 +101,7 @@ export function BookingCard({
               )}
               {booking.admin_notes && (
                 <div>
-                  <span className="font-medium">Admin Notes: </span>
+                  <span className="font-medium">Previous Admin Notes: </span>
                   {booking.admin_notes}
                 </div>
               )}
@@ -106,7 +111,7 @@ export function BookingCard({
             <div className="font-medium">Admin Notes:</div>
             <Textarea
               placeholder="Add notes about this booking"
-              value={adminNotes[booking.id] || booking.admin_notes || ""}
+              value={adminNotes[booking.id] || ""}
               onChange={(e) => onNotesChange(booking.id, e.target.value)}
               className="h-24"
             />
@@ -115,7 +120,7 @@ export function BookingCard({
               {booking.status !== "confirmed" && (
                 <Button 
                   size="sm" 
-                  onClick={() => onStatusUpdate(booking.id, "confirmed")}
+                  onClick={() => handleStatusChange("confirmed")}
                   className="flex gap-1"
                 >
                   <Check size={16} /> Confirm
@@ -125,7 +130,7 @@ export function BookingCard({
                 <Button 
                   size="sm" 
                   variant="destructive" 
-                  onClick={() => onStatusUpdate(booking.id, "cancelled")}
+                  onClick={() => handleStatusChange("cancelled")}
                   className="flex gap-1"
                 >
                   <X size={16} /> Cancel
@@ -135,7 +140,7 @@ export function BookingCard({
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  onClick={() => onStatusUpdate(booking.id, "in_progress")}
+                  onClick={() => handleStatusChange("in_progress")}
                   className="flex gap-1"
                 >
                   <Clock size={16} /> In Progress
@@ -145,7 +150,7 @@ export function BookingCard({
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  onClick={() => onStatusUpdate(booking.id, "completed")}
+                  onClick={() => handleStatusChange("completed")}
                   className="flex gap-1"
                 >
                   <CheckCircle size={16} /> Complete
@@ -155,7 +160,7 @@ export function BookingCard({
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  onClick={() => onStatusUpdate(booking.id, "pending")}
+                  onClick={() => handleStatusChange("pending")}
                   className="flex gap-1"
                 >
                   <RefreshCw size={16} /> Reactivate

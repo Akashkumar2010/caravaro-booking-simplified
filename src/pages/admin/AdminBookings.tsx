@@ -13,6 +13,7 @@ export default function AdminBookings() {
 
   // Handle status update
   const handleStatusUpdate = (bookingId: string, status: ServiceStatus) => {
+    console.log(`Status update triggered for booking ${bookingId} to ${status}`);
     updateBookingStatus.mutate({ 
       bookingId, 
       status, 
@@ -41,7 +42,7 @@ export default function AdminBookings() {
         </div>
       ) : bookings?.length === 0 ? (
         <div className="text-center py-10 text-gray-500">
-          No bookings found.
+          No bookings found. {filterStatus && <span>Try changing the status filter.</span>}
         </div>
       ) : (
         <div className="grid gap-4">

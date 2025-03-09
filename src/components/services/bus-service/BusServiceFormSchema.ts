@@ -10,3 +10,5 @@ export const formSchema = z.object({
   special_requests: z.string().optional(),
   rental_vehicle_id: z.string().min(1, "Please select a bus")
 });
+
+export type BusServiceFormValues = z.infer<typeof formSchema>;

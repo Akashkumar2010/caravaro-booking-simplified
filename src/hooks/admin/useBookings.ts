@@ -52,21 +52,28 @@ export function useBookings(filterStatus: ServiceStatus | null) {
       status: ServiceStatus;
       adminNotes?: string; 
     }) => {
-      const { error } = await supabase
+      console.log("Updating booking:", bookingId, status, adminNotes);
+      
+      const { data, error } = await supabase
         .from("bookings")
-        .update({ status, admin_notes: adminNotes || null })
-        .eq("id", bookingId);
+        .update({ 
+          status, 
+          admin_notes: adminNotes || null 
+        })
+        .eq("id", bookingId)
+        .select();
       
       if (error) {
         console.error("Error updating booking:", error);
         throw error;
       }
       
-      return { bookingId, status };
+      return { bookingId, status, data };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log("Booking updated successfully:", result);
       queryClient.invalidateQueries({ queryKey: ["adminBookings"] });
-      toast.success("Booking status updated");
+      toast.success("Booking status updated successfully");
     },
     onError: (error) => {
       console.error("Failed to update booking:", error);
