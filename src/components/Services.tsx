@@ -73,6 +73,17 @@ export function Services() {
     setIsBookingOpen(true);
   };
 
+  // Create the bus service card
+  const busServiceCard = {
+    id: "bus-service",
+    name: "Bus Charter Service",
+    description: "Comfortable and reliable bus charter service for groups of all sizes. Perfect for corporate events, weddings, school trips, and more.",
+    type: "bus_service" as const,
+    price: 250,
+    duration: 480,
+    image_url: "/placeholder.svg",
+  };
+
   if (isLoading) {
     return (
       <section className="section-padding bg-gradient-to-b from-gray-50 to-white py-16">
@@ -94,6 +105,9 @@ export function Services() {
       </section>
     );
   }
+
+  // Get the available services and add bus service
+  const availableServices = [...(services || []), busServiceCard];
 
   return (
     <section className="section-padding bg-gradient-to-b from-gray-50 to-white py-16">
@@ -134,13 +148,14 @@ export function Services() {
             </Button>
           )}
           
-          {/* Services container */}
+          {/* Services container - Using flex instead of grid to show in a single row */}
           <div 
             ref={containerRef}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4"
+            className="flex overflow-x-auto gap-8 px-4 pb-4 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {services?.map((service) => (
-              <div key={service.id} className="h-full transform transition-transform duration-300 hover:translate-y-[-5px]">
+            {availableServices.map((service) => (
+              <div key={service.id} className="min-w-[300px] w-[300px] flex-shrink-0 transform transition-transform duration-300 hover:translate-y-[-5px]">
                 <ServiceCard
                   title={service.name}
                   description={service.description || ""}
@@ -157,7 +172,7 @@ export function Services() {
         </div>
         
         <div className="flex justify-center mt-6 gap-2">
-          {services?.map((_, index) => (
+          {availableServices.map((_, index) => (
             <button
               key={index}
               className={`h-2 w-2 rounded-full ${index === 0 ? 'bg-primary' : 'bg-gray-300'}`}
