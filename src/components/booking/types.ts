@@ -3,6 +3,7 @@ import { Service, Vehicle } from "@/types/database";
 import { CarWashFormData } from "../services/car-wash/CarWashForm";
 import { DriverHireFormData } from "../services/driver-hire/DriverHireForm";
 import { CarRentalFormData } from "../services/car-rental/CarRentalForm";
+import { BusServiceFormData } from "../services/bus-service/BusServiceForm";
 
 export interface BookingDialogProps {
   service: Service | null;
@@ -24,13 +25,8 @@ export interface CarRentalDetails {
   insurance?: string;
 }
 
-export interface BusServiceDetails {
-  pickupLocation: string;
-  destination: string;
-  passengers: number;
-  tripType: 'one-way' | 'round-trip';
-  departureDate: string;
-  returnDate?: string;
+export interface BusServiceDetails extends BusServiceFormData {
+  returnDate: string;
 }
 
 export interface VehicleFormProps {
@@ -82,7 +78,7 @@ export interface ServiceSpecificFieldsProps {
 export interface ServiceFormData {
   name: string;
   description: string;
-  type: "car_wash" | "driver_hire" | "car_rental";
+  type: "car_wash" | "driver_hire" | "car_rental" | "bus_service";
   price: number;
   duration: number;
   image_url: string;

@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { BookingDialogProps, LocationDetails, CarRentalDetails } from "./booking/types";
+import { BookingDialogProps, LocationDetails, CarRentalDetails, BusServiceDetails } from "./booking/types";
 import { ServiceSpecificFields } from "./booking/ServiceSpecificFields";
 import { Loader2 } from "lucide-react";
 
@@ -38,6 +38,14 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
     returnLocation: "",
     carType: "economy",
     insurance: "basic"
+  });
+  const [busServiceDetails, setBusServiceDetails] = useState<BusServiceDetails>({
+    pickupLocation: "",
+    destination: "",
+    passengers: 0,
+    tripType: 'one-way',
+    departureDate: "",
+    returnDate: ""
   });
 
   useEffect(() => {
@@ -141,6 +149,13 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
         bookingData.destination = carRentalDetails.returnLocation;
       }
 
+      if (service.type === "bus_service") {
+        bookingData.pickup_location = busServiceDetails.pickupLocation;
+        bookingData.destination = busServiceDetails.destination;
+        bookingData.seating_capacity = busServiceDetails.passengers.toString();
+        bookingData.rental_duration = busServiceDetails.tripType === 'round-trip' ? 2 : 1;
+      }
+
       if (couponCode) {
         bookingData.coupon_code = couponCode;
       }
@@ -192,6 +207,8 @@ export function BookingDialog({ service, isOpen, onClose }: BookingDialogProps) 
             setLocationDetails={setLocationDetails}
             carRentalDetails={carRentalDetails}
             setCarRentalDetails={setCarRentalDetails}
+            busServiceDetails={busServiceDetails}
+            setBusServiceDetails={setBusServiceDetails}
           />
 
           <div className="space-y-2">

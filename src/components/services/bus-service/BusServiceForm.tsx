@@ -17,6 +17,16 @@ import { Bus, Calendar, Users, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { RentalVehicle } from "@/types/database";
 
+// Define the BusServiceFormData type for use with onFormChange prop
+export interface BusServiceFormData {
+  pickupLocation: string;
+  destination: string;
+  passengers: number;
+  tripType: 'one-way' | 'round-trip';
+  departureDate: string;
+  returnDate?: string;
+}
+
 const formSchema = z.object({
   scheduled_time: z.string().min(1, "Please select a date and time"),
   pickup_location: z.string().min(3, "Please enter a pickup location"),
@@ -27,9 +37,22 @@ const formSchema = z.object({
   rental_vehicle_id: z.string().min(1, "Please select a bus")
 });
 
-export function BusServiceForm() {
+interface BusServiceFormProps {
+  onFormChange?: (formData: BusServiceFormData) => void;
+}
+
+export function BusServiceForm({ onFormChange }: BusServiceFormProps = {}) {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Create state to track form values for the onFormChange callback
+  const [formData, setFormData] = useState<BusServiceFormData>({
+    pickupLocation: "",
+    destination: "",
+    passengers: 0,
+    tripType: 'one-way',
+    departureDate: ""
+  });
 
   // Fetch available buses
   const { data: buses, isLoading: isLoadingBuses } = useQuery({
@@ -59,8 +82,26 @@ export function BusServiceForm() {
     },
   });
 
+  // Update formData when form values change
+  const updateFormData = (values: any) => {
+    const newFormData = {
+      ...formData,
+      pickupLocation: values.pickup_location || formData.pickupLocation,
+      destination: values.destination || formData.destination,
+      departureDate: values.scheduled_time || formData.departureDate,
+    };
+    
+    setFormData(newFormData);
+    
+    // Call the onFormChange prop if it exists
+    if (onFormChange) {
+      onFormChange(newFormData);
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
+    updateFormData(values);
     
     try {
       // First get the bus service type id
@@ -68,15 +109,24 @@ export function BusServiceForm() {
         .from("services")
         .select("id")
         .eq("type", "bus_service")
-        .single();
+        .maybeSingle();
       
       if (serviceError) {
-        if (serviceError.code === "PGRST116") {
-          toast.error("Bus service not found. Please contact admin.");
-        } else {
-          toast.error("Failed to fetch service information");
-          console.error("Service fetch error:", serviceError);
-        }
+        toast.error("Failed to fetch service information");
+        console.error("Service fetch error:", serviceError);
+        return;
+      }
+      
+      if (!serviceData) {
+        toast.error("Bus service not found. Please contact admin.");
+        return;
+      }
+      
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        toast.error("You must be logged in to make a booking");
         return;
       }
       
@@ -84,6 +134,7 @@ export function BusServiceForm() {
       const { data: bookingData, error: bookingError } = await supabase
         .from("bookings")
         .insert({
+          user_id: user.id,
           service_id: serviceData.id,
           scheduled_time: new Date(values.scheduled_time).toISOString(),
           pickup_location: values.pickup_location,
@@ -127,7 +178,7 @@ export function BusServiceForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onChange={() => updateFormData(form.getValues())} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
